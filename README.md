@@ -72,8 +72,19 @@ go build -o server  ./cmd/server
 | `SUMMARY.md` | 100-word summary of the idea and approach |
 | `examples/` | A rough sample snippet and an illustrative review |
 
+## Run with Docker
+
+The server is a static binary on a distroless base (tiny image, no shell, runs
+as non-root):
+
+```bash
+docker build -t smart-code-reviewer .
+docker run --rm -p 8080:8080 -e ANTHROPIC_API_KEY=sk-ant-... smart-code-reviewer
+# open http://localhost:8080
+```
+
 ## Deploy a public link
 
-The server is a single static binary — deploy it anywhere that runs a Go binary
-or a container (Fly.io, Render, Cloud Run, a VM). Set `ANTHROPIC_API_KEY` and
-`PORT` in the environment.
+The image is a single static binary, so it deploys anywhere that runs a
+container (Fly.io, Render, Cloud Run, a VM). Set `ANTHROPIC_API_KEY` and `PORT`
+in the environment.

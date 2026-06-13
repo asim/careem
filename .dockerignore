@@ -1,0 +1,10 @@
+.git
+.gitignore
+*.md
+examples
+/review
+/server
+*.exe
+.env
+Dockerfile
+.dockerignore
