@@ -1,0 +1,75 @@
+SMART CODE REVIEWER — Careem "AI Savviness" Challenge Submission
+=================================================================
+
+Applicant: Asim Aslam
+Email:     asim@aslam.me
+Challenge attempted: #1 Smart Code Reviewer (the prototype also delivers
+                     #3 Code Review Assistant — the reviewing prompt itself)
+
+
+LINKS
+-----
+- Source code (public GitHub repo): https://github.com/asim/careem
+- The reviewing prompt (Challenge #3): https://github.com/asim/careem/blob/main/PROMPT.md
+- Example output:                      https://github.com/asim/careem/blob/main/examples/sample-review.md
+- Dataset: not required. The "input" is any code snippet the tool reviews;
+  examples/sample.go is the self-created demo input.
+
+
+100-WORD SUMMARY
+----------------
+Smart Code Reviewer is an AI assistant that gives code a structured first-pass
+review before it reaches a human reviewer, so people spend their attention on
+judgment, not nitpicks. Paste a snippet and it returns a health summary, a 1-10
+score, the three highest-impact improvements (each tagged with category,
+severity, location, and a concrete fix), and one genuine positive note. My
+approach: a senior-engineer prompt with anti-quota guardrails, and - crucially -
+the output is enforced through a Claude tool schema so it's always valid JSON
+the UI can render reliably. It's written in Go (standard library only) and ships
+as a web server, a CLI, and a reusable prompt.
+
+
+HOW IT WORKS / APPROACH
+-----------------------
+The tool asks the model to return its review through a FORCED TOOL CALL
+(submit_review) with a strict JSON schema, instead of free-form prose. That is
+the key engineering decision: it guarantees the output is always valid,
+renderable JSON with exactly three ranked improvements plus one positive note -
+no fragile text-scraping, no "sometimes it forgets the format". That reliability
+is what matters when a tool runs on every pull request.
+
+The prompt is framed as a "pre-human review" by a senior engineer, with
+anti-quota guardrails ("be proportionate", "don't invent problems to hit three")
+so it produces high-signal feedback rather than a linter-style dump, and a
+mandatory positive note so the review stays constructive for the author.
+
+Written in Go with the standard library only (no external dependencies), it
+ships in three forms:
+  - a web server (net/http + html/template),
+  - a command-line tool (review a file or pipe via stdin),
+  - a standalone copy-paste prompt (Challenge #3).
+
+
+HOW TO RUN
+----------
+Requires Go 1.24+ and an Anthropic API key.
+
+  export ANTHROPIC_API_KEY=sk-ant-...
+  go run ./cmd/server                  # then open http://localhost:8080
+  go run ./cmd/review examples/sample.go
+
+Set REVIEWER_MODEL=claude-opus-4-8 for the deepest analysis; the default
+claude-sonnet-4-6 is the fast/quality sweet spot.
+
+
+WHAT THE OUTPUT LOOKS LIKE
+--------------------------
+For each snippet the reviewer returns:
+  - a one-line health summary and a 1-10 score,
+  - the THREE highest-impact improvements, each with category
+    (readability / structure / maintainability / correctness / performance /
+    security), severity (high / medium / low), location, and a concrete fix,
+  - ONE genuine positive note,
+  - an optional list of minor notes.
+
+See examples/sample-review.md in the repo for a full worked example.
