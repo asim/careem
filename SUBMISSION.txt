@@ -2,7 +2,7 @@ SMART CODE REVIEWER — Careem "AI Savviness" Challenge Submission
 =================================================================
 
 Applicant: Asim Aslam
-Email:     asim@aslam dot me
+Email:     asim at aslam dot me
 Challenge attempted: #1 Smart Code Reviewer (the prototype also delivers
                      #3 Code Review Assistant — the reviewing prompt itself)
 
